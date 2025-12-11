@@ -3,12 +3,12 @@ import User from "../schema/userSchema";
 import Quiz from "../schema/quizSchema";
 
 export async function createQuiz(
-        title: string, 
-        author: string, 
-        questions: string[], 
-        answers: string[][], 
-        correctAnswers: number[]
-    ) {
+    title: string,
+    author: string,
+    questions: string[],
+    answers: string[][],
+    correctAnswers: number[]
+) {
     try {
         const authorExists = await User.findOne({ Username: author }).lean();
         if (!authorExists) return 'No user with such username';

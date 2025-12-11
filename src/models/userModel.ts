@@ -1,15 +1,15 @@
 import User from "../schema/userSchema"
 import bcrypt from "bcrypt"
 
-export async function createUser(username: string, password: string){
+export async function createUser(username: string, password: string) {
     try {
-        const exists = await User.findOne({username});
-        if(exists) return "User already exists";
+        const exists = await User.findOne({ username });
+        if (exists) return "User already exists";
 
         const saltRounds = Number(process.env.HASH_SALT) || 10;
         const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-        const newUser = new User({username, password: hashedPassword});
+        const newUser = new User({ username, password: hashedPassword });
         await newUser.save()
         return 'User created successfylly';
     } catch (err) {
@@ -18,13 +18,13 @@ export async function createUser(username: string, password: string){
     }
 }
 
-export async function checkCredentials(username: string, password: string){
+export async function checkCredentials(username: string, password: string) {
     try {
-        const exists = await User.findOne({username}).lean();
-        if(!exists) return "User does not exists";
+        const exists = await User.findOne({ username }).lean();
+        if (!exists) return "User does not exists";
 
         const passwordCheck = await bcrypt.compare(password, exists.password);
-        if(!passwordCheck) return 'Password not correct';
+        if (!passwordCheck) return 'Password not correct';
 
         return exists._id;
     } catch (err) {
