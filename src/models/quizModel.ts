@@ -1,13 +1,19 @@
 import mongoose from "mongoose";
-import User from "@/schema/userSchema";
-import Quiz from "@/schema/quizSchema";
+import User from "../schema/userSchema";
+import Quiz from "../schema/quizSchema";
 
-export async function createQuiz(title: string, author:string, questions: string[], answers: string[][]) {
+export async function createQuiz(
+        title: string, 
+        author: string, 
+        questions: string[], 
+        answers: string[][], 
+        correctAnswers: number[]
+    ) {
     try {
-        const authorExists = await User.findOne({Username: author}).lean();
-        if(!authorExists) return 'No user with such username';
+        const authorExists = await User.findOne({ Username: author }).lean();
+        if (!authorExists) return 'No user with such username';
 
-        const newQuiz = new Quiz({title, author, questions, answers});
+        const newQuiz = new Quiz({ title, author, questions, answers, correctAnswers });
         await newQuiz.save();
 
         return 'Quiz created succesfully';
@@ -19,7 +25,7 @@ export async function createQuiz(title: string, author:string, questions: string
 
 export async function findQuizesByTitle(title: string) {
     try {
-        const quizes = await Quiz.find({title}).lean();
+        const quizes = await Quiz.find({ title }).lean();
         return quizes;
     } catch (err) {
         console.error("findQuizesByTitle error:", err);
@@ -29,7 +35,7 @@ export async function findQuizesByTitle(title: string) {
 
 export async function findQuizesByAuthor(author: string) {
     try {
-        const quizes = await Quiz.find({author}).lean();
+        const quizes = await Quiz.find({ author }).lean();
         return quizes;
     } catch (err) {
         console.error("findQuizesByAuthor error:", err);
@@ -39,7 +45,7 @@ export async function findQuizesByAuthor(author: string) {
 
 export async function findQuizesByTitleAndAuthor(title: string, author: string) {
     try {
-        const quizes = await Quiz.find({title, author}).lean();
+        const quizes = await Quiz.find({ title, author }).lean();
         return quizes;
     } catch (err) {
         console.error("findQuizesByTitleAndAuthor error:", err);

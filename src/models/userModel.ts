@@ -1,4 +1,4 @@
-import User from "@/schema/userSchema"
+import User from "../schema/userSchema"
 import bcrypt from "bcrypt"
 
 export async function createUser(username: string, password: string){
