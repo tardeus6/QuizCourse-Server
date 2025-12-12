@@ -1,19 +1,20 @@
-import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import { redis } from "../database/redis";
+import jwt from "jsonwebtoken"
 
-export async function verifyToken(req: Request, res: Response, next: NextFunction) {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) return res.status(401).json({ error: "Token missing" });
+interface CustomJwtPayload{
+  userID: string,
+}
+function auth(req: Request, res: Response, next: NextFunction) {
+  const header = req.headers.authorization;
+  if (!header) return res.status(401).json({ msg: "Missing token" });
 
-  const exists = await redis.get(token);
-  if (!exists) return res.status(403).json({ error: "Token invalid or expired" });
+  const token = header.split(" ")[1];
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
-    (req as any).user = decoded;
+    const payload = jwt.verify(token, process.env.JWT_SECRET as string) as CustomJwtPayload;
+    req.userID = payload.userID;
     next();
   } catch {
-    return res.status(403).json({ error: "Invalid token" });
+    res.status(401).json({ msg: "Invalid token" });
   }
 }
