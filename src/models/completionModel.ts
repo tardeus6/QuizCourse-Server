@@ -21,7 +21,7 @@ const completionModel = {
             });
 
             await completion.save();
-            return { status: 201, data: completion.toObject() };
+            return { status: 201, data: {quizData: quiz ,completionID: completion.toObject()._id} };
         } catch (err) {
             console.error("startCompletion error:", err);
             throw new Error(`Failed to start completion: ${err instanceof Error ? err.message : String(err)}`);
@@ -48,7 +48,8 @@ const completionModel = {
             completion.dateOfCompletion = new Date();
 
             await completion.save();
-            return { status: 200, data: completion.toObject() };
+            const result = {grade, dateOfCompletion: completion.dateOfCompletion}
+            return { status: 200, data: result };
         } catch (err) {
             console.error("finishCompletion error:", err);
             throw new Error(`Failed to finish completion: ${err instanceof Error ? err.message : String(err)}`);
@@ -87,9 +88,14 @@ const completionModel = {
 
     async listCompletionsByUserID(userID: string) {
         try {
-            const completions = await Completion.find({ completedBy: new mongoose.Types.ObjectId(userID) })
+            const completions = await Completion.find({ 
+                completedBy: new mongoose.Types.ObjectId(userID),
+                dateOfCompletion: { $ne: null }
+             })
                 .populate("quizID", "title -_id")
-                .lean();
+                .sort({ dateOfCompletion: -1 })
+                .lean()
+                .limit(10);
 
             return { status: 200, data: completions };
         } catch (err) {

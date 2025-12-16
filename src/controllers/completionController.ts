@@ -10,9 +10,12 @@ const completionControllers = {
         if (!userID) {
             return res.status(401).json({ message: 'Unauthorized' });
         }
+
         try {
-            const result = await CompletionModel.startCompletion(userID, quizID);
-            res.status(result.status).json(result);
+            const quizData = await QuizModel.getQuizInfo(quizID);
+            const completion = await CompletionModel.startCompletion(quizID, userID);
+
+            res.status(completion.status).json({quizData: quizData.quiz, completion: completion.data});
         } catch (err) {
             console.error("startCompletionController error:", err);
             res.status(500).json({ message: 'Internal server error' });
@@ -61,9 +64,17 @@ const completionControllers = {
         
         try {
             const result = await CompletionModel.listCompletionsByQuizID(quizID);
-            res.status(result.status).json(result);
+            res.status(result.status).json(result.data);
         } catch (err) {
             console.error("listCompletionsByQuizIDController error:", err);
             res.status(500).json({ message: 'Internal server error' });
         }},
-}
+        async listLastCompletions(req:Request, res: Response)
+        {
+            const userID = req.userID as string;
+            const result = await CompletionModel.listCompletionsByUserID(userID);
+            res.status(result.status).json(result.data);
+        }
+};
+
+export default completionControllers;

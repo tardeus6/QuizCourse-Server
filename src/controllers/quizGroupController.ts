@@ -38,7 +38,7 @@ const quizGroupControllers = {
     },
     //public controllers
     async listGroupsByTitleController(req: Request, res: Response) {
-        const { title } = req.body;
+        const { title } = req.params;
         try {
             const result = await QuizGroupModel.listGroupsByTitle(title);
             res.status(result.status).json(result);
@@ -47,4 +47,6 @@ const quizGroupControllers = {
             res.status(500).json({ message: 'Internal server error' });
         }
     }
-}
+};
+
+export default quizGroupControllers;
