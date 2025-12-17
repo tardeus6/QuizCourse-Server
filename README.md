@@ -11,10 +11,7 @@
 ## Використані технології
 - Node.js  
 - Express.js  
-- npm  
-- Morgan  
-- MongoDB / SQLite / JSON-файли  
-- Postman  
+- MongoDB
 
 ---
 
